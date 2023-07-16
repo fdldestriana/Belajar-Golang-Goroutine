@@ -1,0 +1,72 @@
+Parallel Programming
+memecahkan suatu masalah menjadi bagian yang lebih kecil dan dijalankan secara
+bersamaan pada waktu yang bersaamaan pula.
+Contoh analogi paralel proses di kehidupan nyata
+Kita menjalankan browser, text editor, dan emulator
+Beberapa koki memasak makanan yang berbeda pada waktu yang bersamaan
+Beberapa teller di bank melayani nasabah masing - masing pada waktu yang bersamaan
+
+Dalam Parallel Programming terdapat dua hal
+Process dan Thread
+Process adalah sebuah eksekusi program, thread segmen aplikasi
+Process mengonsumsi banyak memory, thread mengonsumsi sedikit memory
+Process saling terisolasi dengan process lain, thread bisa saling berhubungan jika dalam process yang sama
+Process lama untuk dijalankan dihentikan, thread cepat untuk dijalankan dihentikan.
+
+Parallel berbeda dengan Cocurrency
+Parallel berjalan di waktu yang sama, sedangkan concurrency berjalan secara bergantian.
+Dari satu sudut, software dikembangkan dibagi menjadi CPU bound dan I/O bound.
+CPU bound adalah di mana software yang dikembangkan sangat tergantung dari jumlah core yang dimiliki CPU
+karenanya penggunaan parallel sangat optimal padanya. Sedangkan software I/O bound bergantung pada 
+konektivitas dengan perangkat atau service lain seperti koneksi kepada database atau write and read file,
+sehingga penerapan concurrency programming akan sangat optimal padanya.
+Dalam parallel kita membutuhkan banyak thread, sedangkan dalam concurrency tidak butuh banyak thread.
+
+
+Pada Golang concurrency dapat diterapkan melalui goroutine
+Goroutine adalah thread ringan yang dikelola Go Runtime, ukuran Goroutine 2kb
+sedangkan Thread biasanya 1mb. Namun tidak seperti Thread yang berjalan secara parallel,
+Goroutine berjalan secara concurrent.
+Goroutine sendiri berjalan di dalam thread yang dijalankan oleh Go Scheduller di mana
+jumlah threadnya sebanyak GOMAXPROCS (biasanya sejumlah CPU core).
+Jadi Goroutine bukan pengganti Thread, karena Goroutine berjalan di atas Thread.
+Namun kita dipermudah dengan bantuan Go Scheduler untuk manajemen Thread.
+
+Istilah dalam Go Scheduler
+G: Goroutine
+M: Thread (Machine)
+P: Processor
+
+Untuk menjalankan Goroutine maka cukup berikan kata kunci go sebelum kita memanggil nama function di Golang
+ini sudah tersedia secara built in dalam bahasa pemrograman Golang, dan function yang dijalankan dalam
+Goroutine akan berjalan secara asynchronous. Namun hati - hati, jika aplikasi kita berhenti sebelum function
+dalam Goroutine selesai maka, Goroutine tersebut akan terhenti juga, tidak akan ditunggu sampai ia selesai
+
+
+Channel
+Channel adalah tempat komunikasi secara synchronous yang bisa dilakukan oleh Goroutine
+Di dalam Channel terdapat pengirim dan penerima, yang mana biasanya mereka adalah Goroutine yang berbeda
+Saat mengirim data ke Channel, Goroutine akan terblock sampai ada yang menerima data tersebut
+Maka dari itu Channel disebut alat komunikasi synchronous (blocking), Channel cocok sekali sebagai alternatif
+seperti mekanisme async-await yang terdapat di beberapa bahasa pemrograman lain.
+Channel untuk mereturn value dari Goroutine.
+
+go => channel => go
+
+Karakteristik Channel
+Secara default channel hanya bisa menampung satu data, jika ingin menambah data harus menunggu data tersebut diambil.
+Channel hanya bisa menerima satu jenis data, jadi harus didefinisikan tipe data yang akan diterima sebuah channel.
+Channel bisa diambil dari lebih dari satu Goroutine, yang mengambilnya pun bisa lebih dari satu Goroutine,
+maksudnya Goroutine apapun bisa mengirim data ke Channel dan mengambil data dari Channel, hanya saja Channel
+hanya menampung satu data dalam satu waktu.
+Channel harus diclose jika tidak digunakan agar tidak menyebabkan memory leak.
+
+Pembuatan dan penggunaa Channel
+channel := make(chan string) membuat channel
+channel <- "Eko" mengirim data ke channel
+data := <-channel deklarasi variable yang menerima data dari channel
+var data2 string deklarasi variable
+data2 = <-channel mengirim data channel ke dalam variable
+fmt.Println(<-channel) passing data channel langsung ke dalam sebuah function
+close(channel) close channel untuk menghindari memory leak
+defer close(channel) lebih aman menggunakan defer agar tergaransi bahwa channel akan selalu diclose.
