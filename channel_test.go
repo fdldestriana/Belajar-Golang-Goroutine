@@ -95,7 +95,9 @@ func TestRangeChannel(t *testing.T) {
 }
 
 // select channel
-func TestSelectChannel(t *testing.T) {
+// mengambil data dari banyak channel untuk banyak goroutine
+
+func TestSelectDefaultChannel(t *testing.T) {
 	channel1 := make(chan string)
 	channel2 := make(chan string)
 
@@ -114,10 +116,33 @@ func TestSelectChannel(t *testing.T) {
 		case data := <-channel2:
 			fmt.Println("Data dari channel kedua", data)
 			counter++
+		default:
+			fmt.Println("Menunggu data")
 		}
+
 		if counter == 2 {
 			break
 		}
 	}
 
+}
+
+// Race Condition
+// memanipulasi variable yang sama dengan banyak goroutine
+// kondisi di mana tiap goroutine berkompetisi untuk memanipulasi
+// variable yang sama sehingga ada nilai-nilai yang hilang
+// dan tidak tampak perubahan pada varibale yang dimanipulasi
+// kondisi ini dapat titangani dengan sync.Mutex
+func TestRaceCondition(t *testing.T) {
+	x := 0
+
+	for i := 1; i <= 1000; i++ {
+		go func() {
+			for j := 1; j <= 100; j++ {
+				x = x + 1
+			}
+		}()
+	}
+	time.Sleep(5 * time.Second)
+	fmt.Println("Counter =", x)
 }
