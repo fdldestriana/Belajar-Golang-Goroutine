@@ -21,8 +21,8 @@ func TestOnce(t *testing.T) {
 	group := sync.WaitGroup{}
 
 	for i := 1; i <= 100; i++ {
+		group.Add(1)
 		go func() {
-			group.Add(1)
 			once.Do(OnlyOnce) // akan menghasilkan 1
 			// OnlyOnce() // akan menghasilkan random karena race condition
 			group.Done()
