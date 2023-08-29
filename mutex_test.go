@@ -41,9 +41,9 @@ type BankAccount struct {
 }
 
 func (account *BankAccount) AddBalance(amount int) {
-	// account.RWMutex.Lock()
+	account.RWMutex.Lock()
 	account.Balance = account.Balance + amount
-	// account.RWMutex.Unlock()
+	account.RWMutex.Unlock()
 }
 
 func (account *BankAccount) GetBalance() int {
